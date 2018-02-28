@@ -190,6 +190,7 @@ export default class GameView {
             this.joinGameCallback();
         } else {
             DomHelper.setPlayOrWatchButtonText('Play');
+            console.log(this.spectateGameCallback)
             this.spectateGameCallback();
         }
     }

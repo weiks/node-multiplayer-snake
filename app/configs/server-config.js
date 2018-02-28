@@ -6,7 +6,7 @@ const ServerConfig = {
     MAX_FPS: 60,
     PLAYER_STARTING_LENGTH: 10,
     SPAWN_TURN_LEEWAY: 10,
-    DEFAULT_STARTING_BOTS: 0,
+    DEFAULT_STARTING_BOTS: 5,
     MAX_BOTS: 20,
     BOT_CHANGE_DIRECTION_PERCENT: 0.1,
     FOOD: {
@@ -55,6 +55,7 @@ const ServerConfig = {
             IMAGE_UPLOAD: 'image upload',
             NEW_PLAYER: 'new player',
             NAME_CHANGE: 'player changed name',
+            ID_CHANGE: 'player changed id',
             KEY_DOWN: 'key down',
             CANVAS_CLICKED: 'canvas clicked',
             DISCONNECT: 'disconnect',

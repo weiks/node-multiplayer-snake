@@ -28,14 +28,26 @@ export default class GameController {
         this.food = {};
         this.textsToDraw = [];
         this.walls = [];
+        this.client = new Quarters({
+            appKey: 'U0ohUzcFLdIc7Q2oPrro',
+            appSecret: 'bs12k7jd8sct626ocf6y8r5p3udr35ddn',
+            quartersURL: 'https://dev.pocketfulofquarters.com',
+            apiURL: 'https://api.dev.pocketfulofquarters.com/v1/'
+        })
+        this.refreshToken = window.localStorage.getItem('snake-refresh-token')
+        this.displayName = window.localStorage.getItem('displayName')
+        this.quartersId = window.localStorage.getItem('quartersId')
     }
 
     connect(io) {
+        this.client.setRefreshToken(this.refreshToken)
         this.socket = io();
         this._initializeSocketIoHandlers();
         const storedName = localStorage.getItem(ClientConfig.LOCAL_STORAGE.PLAYER_NAME);
         const storedBase64Image = localStorage.getItem(ClientConfig.LOCAL_STORAGE.PLAYER_IMAGE);
         this.socket.emit(ClientConfig.IO.OUTGOING.NEW_PLAYER, storedName, storedBase64Image);
+        this.playerNameUpdatedCallback(this.displayName)
+        this.playerIdUpdatedCallback(this.quartersId)
     }
 
     renderGame() {
@@ -127,7 +139,42 @@ export default class GameController {
     }
 
     joinGameCallback() {
-        this.socket.emit(ClientConfig.IO.OUTGOING.JOIN_GAME);
+        console.log("join game", this.client)
+        var that = this
+
+      this.client
+        .requestTransfer({
+          tokens: 2, // 2 quarters
+          description: 'Play Multi-Snake' // transfer description
+        })
+        .then(function(request) {
+            console.log("then")
+          // add iframe on the page and ask player to authorize transfer
+          that.client.authorizeTransfer(request.id, 'iframe', function(data) {
+            // stop loading
+            //that.loading = false
+            console.log("authorize")
+            if (data.error) {
+              // data.message
+            } else if (data.cancel) {
+              // player canceled transfer
+            } else {
+              // data.txId => Ethereum transaction tx id
+              // data.requestId => Request Id to get details about order (/v1/requests/:requestId)
+
+              // change quarters
+
+              // Send server that we have paid 10 quarters and check if I won
+              //that.playNow(data.txId, data.requestId, chance)
+              that.socket.emit(ClientConfig.IO.OUTGOING.JOIN_GAME);
+            }
+          })
+        })
+        .catch(function(e) {
+          // stop loading
+          //that.loading = false
+          console.error(e)
+        })
     }
 
     keyDownCallback(keyCode) {
@@ -148,7 +195,14 @@ export default class GameController {
         localStorage.setItem(ClientConfig.LOCAL_STORAGE.PLAYER_NAME, name);
     }
 
+    playerIdUpdatedCallback(id) {
+        console.log("id updated")
+        this.socket.emit(ClientConfig.IO.OUTGOING.ID_CHANGE, id);
+        localStorage.setItem(ClientConfig.LOCAL_STORAGE.ID_NAME, id);
+    }
+
     spectateGameCallback() {
+        console.log("spectate")
         this.socket.emit(ClientConfig.IO.OUTGOING.SPECTATE_GAME);
     }
 

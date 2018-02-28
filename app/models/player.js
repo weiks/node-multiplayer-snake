@@ -1,5 +1,17 @@
 'use strict';
 
+const Quarters = require('node-quarters')
+
+var quartersClient = new Quarters({
+  key: 'U0ohUzcFLdIc7Q2oPrro',
+  webSecret: 'bs12k7jd8sct626ocf6y8r5p3udr35ddn',
+  secret: '29ys3xlpfg5yhh3ii16zl9qusffdqk7kxgt08imvb5aruptpttsf',
+  address: '0x347b0bfc4a86b1402c9dd92fea727235e92888c0',
+  quartersURL: 'https://dev.pocketfulofquarters.com',
+  apiURL: 'https://api.dev.pocketfulofquarters.com/v1/'
+})
+
+
 class Player {
     constructor(id, name, color) {
         this.id = id;
@@ -7,6 +19,7 @@ class Player {
         this.color = color;
         this.growAmount = 0;
         this.moveCounter = 0;
+        this.quartersId = '';
     }
 
     changeDirection(newDirection) {
@@ -67,6 +80,15 @@ class Player {
         this.growAmount = growAmount;
     }
 
+    sendQuarters(amount) {
+        console.log("send a quarter", this.quartersId)
+        quartersClient.transferQuarters({
+            user: this.quartersId,
+            amount: amount
+        })
+        .then((txId) => console.log(txId))
+    }
+
     toJSON() {
         return {
             id: this.id,
@@ -77,6 +99,7 @@ class Player {
             color: this.color,
             moveCounter: this.moveCounter,
             base64Image: this.base64Image,
+            quartersId: this.quartersId,
         };
     }
 }

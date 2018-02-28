@@ -101,6 +101,11 @@ class PlayerService {
         }
     }
 
+    changePlayerId(socket, id) {
+        const player = this.playerContainer.getPlayer(socket.id)
+        player.quartersId = id
+    }
+
     disconnectPlayer(playerId) {
         const player = this.playerContainer.getPlayer(playerId);
         if (!player) {
@@ -119,17 +124,21 @@ class PlayerService {
     handlePlayerCollisions() {
         const killReports = this.boardOccupancyService.getKillReports();
         for (const killReport of killReports) {
+            const killer = this.playerContainer.getPlayer(killReport.killerId);
+
             if (killReport.isSingleKill()) {
                 const victim = this.playerContainer.getPlayer(killReport.victimId);
                 if (killReport.killerId === killReport.victimId) {
+                    killer.sendQuarters(1)
                     this.notificationService.broadcastSuicide(victim.name, victim.color);
                 } else {
                     this.playerStatBoard.addKill(killReport.killerId);
                     this.playerStatBoard.increaseScore(killReport.killerId);
                     this.playerStatBoard.stealScore(killReport.killerId, victim.id);
                     // Steal victim's length
-                    this.playerContainer.getPlayer(killReport.killerId).grow(victim.getSegments().length);
-                    const killer = this.playerContainer.getPlayer(killReport.killerId);
+                    killer.grow(victim.getSegments().length);
+                    killer.sendQuarters(1)
+
                     this.notificationService.broadcastKill(killer.name, victim.name, killer.color, victim.color,
                         victim.getSegments().length);
                     this.notificationService.notifyPlayerMadeAKill(killReport.killerId);
@@ -182,6 +191,7 @@ class PlayerService {
     }
 
     playerSpectateGame(playerId) {
+        console.log("spectate",playerId)
         const player = this.playerContainer.getPlayer(playerId);
         this.boardOccupancyService.removePlayerOccupancy(player.id, player.getSegments());
         this.playerContainer.addSpectatingPlayerId(player.id);

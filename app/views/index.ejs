@@ -1,0 +1,73 @@
+<!DOCTYPE html><!DOCTYPE html>
+  <head>
+    <title>Multi-Snake: Eat. Don't die!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+  </head>
+  <body>
+    <div class="container my-5" id="app" v-cloak>
+      <div class="row justify-content-center">
+        <div class="text-center">
+          <h5>Multi-Snake</h5>
+          <div class="text-center text-muted my-3" v-if="loading">
+            Loading...
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center my-3" v-if="!loading && !user">
+        <button @click="authorize" role="button" class="btn btn-primary">Login</button>
+      </div>
+      <div class="row justify-content-md-center" v-if="!loading && user">
+        <div class="col-md-4">
+          <div class="my-3 text-center">{{user.displayName}}</div>
+          <div class="text-muted mt-2" v-if="quarters">
+            <div> You have {{ quarters.toLocaleString() }} quarters. </div>
+          </div>
+          <hr/>
+          <div class="row justify-content-md-center my-3" v-if="result">
+            <div v-if="result == 'won'" class="text-success my-3">You just got {{reward}} quarters as reward. That will be added to your account in around 2 minutes.</div>
+            <button v-if="result == 'won'" role="button" class="col btn btn-success">You won! Congratulations.</button>
+            <button v-if="result == 'lose'" role="button" class="col btn btn-secondary">You lose. Sorry!</button>
+          </div>
+          <div class="row justify-content-md-center my-3" v-if="result">
+            <a href='#' @click.stop="result = null" v-if="result != null" role="button" class="text-center">Play again</a>
+          </div>
+          <div v-if="!result">
+            <div class="row justify-content-center my-3">
+              <button
+                @click="() => startGame(2)"
+                class="col btn btn-primary"
+                role="button">
+                Insert 2 Quarters
+              </button>
+            </div>
+
+            <div class="text-muted">
+              Insert 2 Quarters to join Multi-Snake
+            </div>
+            <div class="my-4 text-danger" v-if="error">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="https://unpkg.com/vue"></script>
+
+  <!-- Quarters SDK -->
+  <script src='/js/lib/Quarters.min.js'></script>
+
+
+  <!--  -->
+  <script src="https://dev.pocketfulofquarters.com/embeds/button.js"
+      data-script-name="quarters-embeds"
+      data-app-id="U0ohUzcFLdIc7Q2oPrro"
+      data-app-key="bs12k7jd8sct626ocf6y8r5p3udr35ddn"
+      charset="utf-8">
+  </script>
+
+  <!-- index.js -->
+  <script src="/js/index.js" charset="utf-8"></script>
+</html>
+
