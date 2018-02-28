@@ -13,9 +13,13 @@ export default class AudioController {
     }
 
     playDeathSound() {
+
+        // You died!!
+
         if (!this.isMuted) {
             this.deathSound.play();
         }
+        DomHelper.setPlayOrWatchButtonText("Play")
     }
 
     playFoodCollectedSound() {
@@ -28,6 +32,7 @@ export default class AudioController {
         if (!this.isMuted) {
             this.killSound.play();
         }
+
     }
 
     playSwapSound() {

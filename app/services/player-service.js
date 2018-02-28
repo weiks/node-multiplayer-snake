@@ -129,7 +129,6 @@ class PlayerService {
             if (killReport.isSingleKill()) {
                 const victim = this.playerContainer.getPlayer(killReport.victimId);
                 if (killReport.killerId === killReport.victimId) {
-                    killer.sendQuarters(1)
                     this.notificationService.broadcastSuicide(victim.name, victim.color);
                 } else {
                     this.playerStatBoard.addKill(killReport.killerId);
@@ -143,17 +142,15 @@ class PlayerService {
                         victim.getSegments().length);
                     this.notificationService.notifyPlayerMadeAKill(killReport.killerId);
                 }
-                this.boardOccupancyService.removePlayerOccupancy(victim.id, victim.getSegments());
-                victim.clearAllSegments();
-                this.playerContainer.addPlayerIdToRespawn(victim.id);
+                this.playerSpectateGame(victim.id);
+
                 this.notificationService.notifyPlayerDied(victim.id);
             } else {
                 const victimSummaries = [];
                 for (const victimId of killReport.getVictimIds()) {
                     const victim = this.playerContainer.getPlayer(victimId);
-                    this.boardOccupancyService.removePlayerOccupancy(victim.id, victim.getSegments());
-                    victim.clearAllSegments();
-                    this.playerContainer.addPlayerIdToRespawn(victim.id);
+                this.playerSpectateGame(victim.id);
+
                     victimSummaries.push({ name: victim.name, color: victim.color });
                     this.notificationService.notifyPlayerDied(victim.id);
                 }
